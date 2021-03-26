@@ -1,0 +1,33 @@
+.program pioST7796
+
+loop:
+    pull
+    out pins, 8
+    jmp loop
+
+% c-sdk {
+static inline void pioST7796_program_init(PIO pio, uint sm, uint offset, 
+    uint led0, 
+    uint led1, 
+    uint led2,
+    uint led3,
+    uint led4,
+    uint led5,
+    uint led6,
+    uint led7
+    ) {
+        
+    pio_sm_config c = pioST7796_program_get_default_config(offset);     
+   
+    sm_config_set_out_pins(&c, led0, 8);
+
+    for(int i=0; i<8; i++ ){
+        pio_gpio_init(pio, i);
+    }
+
+    pio_sm_set_consecutive_pindirs(pio, sm, led0, 8, true);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
