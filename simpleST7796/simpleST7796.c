@@ -41,17 +41,17 @@ void Lcd_Write_Com_Data(unsigned int com,unsigned int dat)
 
 void Address_set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2)
 {
-    Lcd_Write_Com(0x2a);
+    Lcd_Write_Com(0x2a); //Column address set
     Lcd_Write_Data(x1>>8);
     Lcd_Write_Data(x1);
     Lcd_Write_Data(x2>>8);
     Lcd_Write_Data(x2);
-    Lcd_Write_Com(0x2b);
+    Lcd_Write_Com(0x2b); //Row address set
     Lcd_Write_Data(y1>>8);
     Lcd_Write_Data(y1);
     Lcd_Write_Data(y2>>8);
     Lcd_Write_Data(y2);
-    Lcd_Write_Com(0x2c); 							 
+    Lcd_Write_Com(0x2c); //Memory write					 
 }
 
 void Lcd_Init(void)
@@ -67,36 +67,36 @@ void Lcd_Init(void)
     gpio_put(LCD_WR,1);
     gpio_put(LCD_CS,0);  //CS
 
-    Lcd_Write_Com(0xF0);
+    Lcd_Write_Com(0xF0); //NO OPERATION
     Lcd_Write_Data(0xC3);
-    Lcd_Write_Com(0xF0);
+    Lcd_Write_Com(0xF0); //NO OPERATION
     Lcd_Write_Data(0x96);
-    Lcd_Write_Com(0x36);
+    Lcd_Write_Com(0x36); // Memory data access control
     Lcd_Write_Data(0x68);  
-    Lcd_Write_Com(0x3A);
+    Lcd_Write_Com(0x3A); //nterface pixel format
     Lcd_Write_Data(0x05);  
-    Lcd_Write_Com(0xB0);
+    Lcd_Write_Com(0xB0); //Interface Mode Control
     Lcd_Write_Data(0x80);  
-    Lcd_Write_Com(0xB6);
+    Lcd_Write_Com(0xB6); //Display Function Control 
     Lcd_Write_Data(0x20);
     Lcd_Write_Data(0x02);  
-    Lcd_Write_Com(0xB5);
+    Lcd_Write_Com(0xB5); //Blanking Porch Control
     Lcd_Write_Data(0x02);
     Lcd_Write_Data(0x03);
     Lcd_Write_Data(0x00);
     Lcd_Write_Data(0x04);
-    Lcd_Write_Com(0xB1);
+    Lcd_Write_Com(0xB1); //Frame Rate Control （In Normal Mode/Full Colors）
     Lcd_Write_Data(0x80);  
     Lcd_Write_Data(0x10);  
-    Lcd_Write_Com(0xB4);
+    Lcd_Write_Com(0xB4); //Display Inversion Control 
     Lcd_Write_Data(0x00);
-    Lcd_Write_Com(0xB7);
+    Lcd_Write_Com(0xB7); //Entry Mode Set
     Lcd_Write_Data(0xC6);
-    Lcd_Write_Com(0xC5);
+    Lcd_Write_Com(0xC5); //Vcom Control 
     Lcd_Write_Data(0x24);
-    Lcd_Write_Com(0xE4);
+    Lcd_Write_Com(0xE4); //?
     Lcd_Write_Data(0x31);
-    Lcd_Write_Com(0xE8);
+    Lcd_Write_Com(0xE8); //Display Output 
     Lcd_Write_Data(0x40);
     Lcd_Write_Data(0x8A);
     Lcd_Write_Data(0x00);
@@ -105,11 +105,11 @@ void Lcd_Init(void)
     Lcd_Write_Data(0x19);
     Lcd_Write_Data(0xA5);
     Lcd_Write_Data(0x33);
-    Lcd_Write_Com(0xC2);
+    Lcd_Write_Com(0xC2); //Power Control 3 
     Lcd_Write_Com(0xA7);
 
-    Lcd_Write_Com(0xE0);
-    Lcd_Write_Data(0xF0);
+    Lcd_Write_Com(0xE0); //Positive Gamma Control 
+    Lcd_Write_Data(0xF0); 
     Lcd_Write_Data(0x09);
     Lcd_Write_Data(0x13);
     Lcd_Write_Data(0x12);
@@ -124,8 +124,8 @@ void Lcd_Init(void)
     Lcd_Write_Data(0x1D);
     Lcd_Write_Data(0x21);
 
-    Lcd_Write_Com(0XE1);
-    Lcd_Write_Data(0xF0);
+    Lcd_Write_Com(0XE1); //Negative Gamma Control 
+    Lcd_Write_Data(0xF0); 
     Lcd_Write_Data(0x09);
     Lcd_Write_Data(0x13);
     Lcd_Write_Data(0x0C);
@@ -140,21 +140,21 @@ void Lcd_Init(void)
     Lcd_Write_Data(0x1D);
     Lcd_Write_Data(0x21);
 
-    Lcd_Write_Com(0X36);
+    Lcd_Write_Com(0X36); //Memory data access control
     Lcd_Write_Data(0x08);
-    Lcd_Write_Com(0xF0);
+    Lcd_Write_Com(0xF0); //NO OPERATION
     Lcd_Write_Data(0xC3);
-    Lcd_Write_Com(0xF0);
+    Lcd_Write_Com(0xF0); //NO OPERATION
     Lcd_Write_Data(0x69);
-    Lcd_Write_Com(0X13);
-    Lcd_Write_Com(0X11);
-    Lcd_Write_Com(0X29);
+    Lcd_Write_Com(0X13); //Partial off
+    Lcd_Write_Com(0X11); //Sleep out
+    Lcd_Write_Com(0X29); //Display ON
 }
 
 void H_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c)                   
 {	
   unsigned int i,j;
-  Lcd_Write_Com(0x02c); //write_memory_start
+  Lcd_Write_Com(0x02c); //Memory write
   gpio_put(LCD_RS,1);
   gpio_put(LCD_CS,0);
   l=l+x;
