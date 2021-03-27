@@ -15,7 +15,8 @@ pico_sdk_init()
 include(example_auto_set_url.cmake)
 
 
-add_subdirectory(hellopio)
+add_subdirectory(multiblink)
+
 add_subdirectory(ST7796Library)
 add_subdirectory(simpleST7796)
 add_subdirectory(pioST7796)
