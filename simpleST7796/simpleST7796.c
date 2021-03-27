@@ -6,10 +6,10 @@
 #include "hardware/spi.h"
 #include "pico/binary_info.h"
 
-#define LCD_RS     8 //command 0 data 1 selection D/CX
+#define LCD_CS    8 //chip selection CSX
 #define LCD_WR     9 //write
-#define LCD_REST  10 //reset
-#define LCD_CS    11 //chip selection CSX
+#define LCR_RST  10 //reset
+#define LCD_RS     11 //command 0 data 1 selection D/CX
 #define LCD_RD   12 //read
    
 void Lcd_Writ_Bus(uint command)
@@ -42,25 +42,25 @@ void Lcd_Write_Com_Data(unsigned int com,unsigned int dat)
 void Address_set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2)
 {
     Lcd_Write_Com(0x2a);
-	Lcd_Write_Data(x1>>8);
-	Lcd_Write_Data(x1);
-	Lcd_Write_Data(x2>>8);
-	Lcd_Write_Data(x2);
+    Lcd_Write_Data(x1>>8);
+    Lcd_Write_Data(x1);
+    Lcd_Write_Data(x2>>8);
+    Lcd_Write_Data(x2);
     Lcd_Write_Com(0x2b);
-	Lcd_Write_Data(y1>>8);
-	Lcd_Write_Data(y1);
-	Lcd_Write_Data(y2>>8);
-	Lcd_Write_Data(y2);
-	Lcd_Write_Com(0x2c); 							 
+    Lcd_Write_Data(y1>>8);
+    Lcd_Write_Data(y1);
+    Lcd_Write_Data(y2>>8);
+    Lcd_Write_Data(y2);
+    Lcd_Write_Com(0x2c); 							 
 }
 
 void Lcd_Init(void)
 {
-    gpio_put(LCD_REST,1);
+    gpio_put(LCR_RST,1);
     sleep_ms(5); 
-    gpio_put(LCD_REST,0);
+    gpio_put(LCR_RST,0);
     sleep_ms(15);
-    gpio_put(LCD_REST,1);
+    gpio_put(LCR_RST,1);
     sleep_ms(15);
 
     gpio_put(LCD_CS,1);
@@ -203,12 +203,6 @@ void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned 
   }
 }
 
-int RGB(int r,int g,int b)
-{
-    return r << 16 | g << 8 | b;
-}
-
-
 void LCD_Clear(unsigned int j)                   
 {	
   unsigned int i,m;
@@ -231,9 +225,6 @@ int main() {
 
     stdio_init_all();
     
-    const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
 
     gpio_init(0);
     gpio_set_dir(0, GPIO_OUT);
@@ -251,19 +242,6 @@ int main() {
     gpio_set_dir(6, GPIO_OUT);
     gpio_init(7);
     gpio_set_dir(7, GPIO_OUT);
-
-    gpio_put(LED_PIN, 1);
-    sleep_ms(250);
-    gpio_put(LED_PIN, 0);
-    sleep_ms(250);
-    gpio_put(LED_PIN, 1);
-    sleep_ms(250);
-    gpio_put(LED_PIN, 0);
-    sleep_ms(250);
-    gpio_put(LED_PIN, 1);
-    sleep_ms(250);
-    gpio_put(LED_PIN, 0);
-    sleep_ms(250);
 
     printf("Inizio tra 5 secondi\n");
     sleep_ms(1000);
@@ -289,49 +267,25 @@ int main() {
     gpio_init(LCD_CS);
     gpio_set_dir(LCD_CS, GPIO_OUT);
 
-    gpio_init(LCD_REST);
-    gpio_set_dir(LCD_REST, GPIO_OUT);
+    gpio_init(LCR_RST);
+    gpio_set_dir(LCR_RST, GPIO_OUT);
 
     gpio_init(LCD_RD);
     gpio_set_dir(LCD_RD, GPIO_OUT);
 
-    gpio_put(LCD_RS,1); //command 0 data 1 selection D/CX
-    gpio_put(LCD_WR,1); //write
-    gpio_put(LCD_CS,1); //chip selection CSX
-    gpio_put(LCD_REST,1); //reset
-    gpio_put(LCD_RD,1); //read
-
-
+    gpio_put(LCD_RS,1); 
+    gpio_put(LCD_WR,1); 
+    gpio_put(LCD_CS,1); 
+    gpio_put(LCR_RST,1); 
+    gpio_put(LCD_RD,1); 
 
     printf("init...\n");
     Lcd_Init();
     printf("OK\n");
 
-
-gpio_put(0U, 1);
-gpio_put(1U, 1);
-gpio_put(2U, 1);
-gpio_put(3U, 1);
-gpio_put(4U, 1);
-gpio_put(5U, 1);
-gpio_put(6U, 1);
-gpio_put(7U, 1);
-sleep_ms(1000);
-gpio_put(0, 0);
-gpio_put(1, 0);
-gpio_put(2, 0);
-gpio_put(3, 0);
-gpio_put(4, 0);
-gpio_put(5, 0);
-gpio_put(6, 0);
-gpio_put(7, 0);
-sleep_ms(1000);
-
   while(1){      
       
-      gpio_put(LED_PIN, 1);
-
-      printf("blu\n");
+      printf("blue\n");
       LCD_Clear(0xf800);
       printf("OK\n");
       sleep_ms(1000);
@@ -358,26 +312,24 @@ sleep_ms(1000);
 
       printf("rect\n");
       
-      int color=RGB(0XF8,0,0);
+      int color=0xf800;
       for (int i = 0; i<320; i+=10){
 
       if(i>106){
-        color=RGB(0,0X7E,0);
+        color=0x07E0;
       } 
       if(i>212){
-        color=RGB(0,0,0X1F);
+        color=0x001F;
       }          
 
         for(int j=0; j<480; j+=10){
           Rectf(i+1, j+1, 8, 8 , color); 
-          //sleep_ms(10);
         }
       }
       
       printf("OK\n");
       sleep_ms(10000);
-
-      gpio_put(LED_PIN, 0);   
+ 
       printf("END\n"); 
       
   }
