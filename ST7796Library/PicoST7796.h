@@ -1,5 +1,6 @@
 
   //#define USE_PIO =1
+  
   class PicoST7796 {
     private :
     #ifdef USE_PIO 

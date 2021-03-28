@@ -71,16 +71,16 @@ const uint LED_7 = 7;
   void PicoST7796::Address_set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2)
   {
       Lcd_Write_Com(0x2a);
-    Lcd_Write_Data(x1>>8);
-    Lcd_Write_Data(x1);
-    Lcd_Write_Data(x2>>8);
-    Lcd_Write_Data(x2);
+      Lcd_Write_Data(x1>>8);
+      Lcd_Write_Data(x1);
+      Lcd_Write_Data(x2>>8);
+      Lcd_Write_Data(x2);
       Lcd_Write_Com(0x2b);
-    Lcd_Write_Data(y1>>8);
-    Lcd_Write_Data(y1);
-    Lcd_Write_Data(y2>>8);
-    Lcd_Write_Data(y2);
-    Lcd_Write_Com(0x2c); 							 
+      Lcd_Write_Data(y1>>8);
+      Lcd_Write_Data(y1);
+      Lcd_Write_Data(y2>>8);
+      Lcd_Write_Data(y2);
+      Lcd_Write_Com(0x2c); 							 
   }
 
   void PicoST7796::Lcd_Init(void)

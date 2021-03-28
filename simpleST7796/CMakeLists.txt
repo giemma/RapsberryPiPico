@@ -4,7 +4,7 @@ if (TARGET tinyusb_device)
 
 
         # Pull in our pico_stdlib which pulls in commonly used features
-        target_link_libraries(simpleST7796 pico_stdlib hardware_i2c hardware_spi)
+        target_link_libraries(simpleST7796 pico_stdlib hardware_i2c hardware_spi )
 
         pico_enable_stdio_usb(simpleST7796 1)
         pico_enable_stdio_uart(simpleST7796 0)
