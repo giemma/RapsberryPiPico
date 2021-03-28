@@ -182,7 +182,7 @@ void Lcd_Init(void)
 }
 
 
-void H_lineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
+void H_LineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
 {
   unsigned int i,j;
   lenght=lenght+x0;
@@ -195,7 +195,7 @@ void H_lineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned 
   }
 }
 
-void V_lineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
+void V_LineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
 {
   unsigned int i,j;
   lenght=lenght+y0;
@@ -211,14 +211,14 @@ void V_lineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned 
 void H_line(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
 {	
   Lcd_StartWrite();
-  H_lineFast(x0,y0,lenght,c);
+  H_LineFast(x0,y0,lenght,c);
   Lcd_EndWrite();
 }
 
 void V_line(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
 {
   Lcd_StartWrite();
-  V_lineFast(x0,y0,lenght,c);
+  V_LineFast(x0,y0,lenght,c);
   Lcd_EndWrite();  
 }
 
@@ -325,7 +325,7 @@ void Draw_TriangleF(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, i
       a = x2;
     else if (x2 > b)
       b = x2;
-    H_lineFast(a, y0, b - a + 1, color);
+    H_LineFast(a, y0, b - a + 1, color);
     Lcd_EndWrite();
     return;
   }
@@ -347,7 +347,7 @@ void Draw_TriangleF(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, i
 
     if (a > b)
       SWAP(int16_t,a, b);
-    H_lineFast(a, y, b - a + 1, color);
+    H_LineFast(a, y, b - a + 1, color);
   }
 
   sa = (int32_t)dx12 * (y - y1);
@@ -360,7 +360,7 @@ void Draw_TriangleF(int16_t x0, int16_t y0, int16_t x1, int16_t y1,int16_t x2, i
 
     if (a > b)
       SWAP(int16_t,a, b);
-    H_lineFast(a, y, b - a + 1, color);
+    H_LineFast(a, y, b - a + 1, color);
   }
   Lcd_EndWrite();
 }
