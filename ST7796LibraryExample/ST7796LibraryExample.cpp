@@ -8,6 +8,7 @@
 #include "hardware/pio.h"
 #include "time.h"
 #include "../ST7796Library/PicoST7796.h"
+#include "image.h"
 
 PicoST7796 picoST7796;
  
@@ -29,7 +30,7 @@ int main() {
         //red
         picoST7796.LCD_Clear(0xF800);
         sleep_ms(1000);
-
+            
         picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0,0));
         sleep_ms(1000);
 
@@ -49,6 +50,9 @@ int main() {
 
         uint color=picoST7796.RGB(0xFF,0,0);
 
+        picoST7796.Draw_Bitmap(0,0,myImage,320,480);
+        
+        sleep_ms(5000);
         //Vertical lines
         for (int i=1; i<320; i++)
         {
@@ -249,108 +253,4 @@ int main() {
         printf("END\n"); 
       
   }
-
-/*
-        p.DrawEmptyCircle(100,100,20,0x07E0);
-        p.DrawFilledCircle(200,200,20,0x001F);
-
-        sleep_ms(5000);
-
-        printf("rect\n");
-      
-        clock_t t; t = clock();
-
-        p.LCD_Clear(0xFFFFFFFF);
-        int color=0x07E0; //red
-        for (int i = 4; i<320; i+=10){
-
-            if(i>106){
-                color=0x001F; //green
-            } 
-            if(i>212){
-                color=0xf800; //blu
-            }          
-
-            for(int j=4; j<480; j+=10){
-            //Rectf(i+1, j+1, 8, 8 , color);
-            p.DrawFilledCircle(i+1, j+1,4,color);
-            //sleep_ms(10);
-            }
-        }
-
-        p.LCD_Clear(0xFFFFFFFF);
-        color=0x07E0; //red
-        for (int i = 0; i<320; i+=10){
-
-             if(i>106){
-                color=0x001F; //green
-            } 
-            if(i>212){
-                color=0xf800; //blu
-            }         
-
-            for(int j=0; j<480; j+=10){
-            p.Rectf(i+1, j+1, 8, 8 , color);
-           
-            //sleep_ms(10);
-            }
-        }
-
-
-        t = clock() - t;
-        double elapsed = ((double)t) / CLOCKS_PER_SEC ;
-
-        #ifdef USE_PIO 
-        printf("%s(%d) = %d in %f seconds\n", "PIO", "", "rects", elapsed);
-        #else
-        printf("%s(%d) = %d in %f seconds\n", "WITHOUT PIO", "", "rects", elapsed);
-        #endif
-        */
-        
- 
-      
-  }
-
-    /*
-    while (true) {
-
-        pio_sm_put_blocking(pio, sm, 0b00000000);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0xFFFF);
-        sleep_ms(500);
-
-
-        pio_sm_put_blocking(pio, sm, 1);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b00000001);
-        sleep_ms(500);
-        
-        pio_sm_put_blocking(pio, sm, 0b00000010);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b00000100);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b00001000);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b00010000);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b00100000);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b01000000);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b10000000);
-        sleep_ms(500);
-
-        pio_sm_put_blocking(pio, sm, 0b10000000);
-        sleep_ms(500);
-    
-    }
-    
-}*/
+}

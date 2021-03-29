@@ -48,6 +48,8 @@
 
     void Draw_Char(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size_x, uint8_t size_y);
     void Draw_Text(int16_t x, int16_t y, const char *text, uint16_t color, uint16_t bg, uint8_t size_x, uint8_t size_y);
+    
+    void Draw_Bitmap(int16_t x, int16_t y, const uint8_t bitmap[],int16_t w, int16_t h);
     //utility
     int RGB(uint16_t r,uint16_t g,uint16_t b);
     

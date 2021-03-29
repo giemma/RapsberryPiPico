@@ -578,8 +578,7 @@ void PicoST7796::Draw_CircleF(uint16_t x0, uint16_t y0, uint16_t radius, uint16_
 
 
 void PicoST7796::Draw_Char(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size_x, uint8_t size_y)
-{
-  
+{  
   int16_t _width =320;
   int16_t _height=480;
   int16_t _cp437=0;
@@ -628,8 +627,6 @@ void PicoST7796::Draw_Text(int16_t x, int16_t y, const char *text, uint16_t colo
 {
   uint16_t charCount=strlen(text);
   
-  printf("charCount %d\n", charCount);
-
   int16_t x0 = x;
   for(int i=0; i<charCount;i++)
   {
@@ -639,5 +636,33 @@ void PicoST7796::Draw_Text(int16_t x, int16_t y, const char *text, uint16_t colo
     x0 = x0 + (size_x * 6);
 
   }
+}
+
+void PicoST7796::Draw_Bitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w, int16_t h) 
+{
+  uint8_t byte1 = 0;
+  uint8_t byte2 = 0;
+  int16_t color=0xF800;
+
+
+  int pixel_index=0;
+  Lcd_StartWrite();
+  for (int16_t j = 0; j < h; j++) {
+    for (int16_t i = 0; i < w; i++) {
+
+      byte1=bitmap[pixel_index];
+      pixel_index++;
+
+      byte2=bitmap[pixel_index];  
+      pixel_index++;
+
+      color = byte1 | byte2<<8;
+      Draw_Pixel(x + (w- i), y + j, color);
+    }
+  }
+   
+  Lcd_EndWrite();
+
+  printf("pixel_index %d\n", pixel_index);
 }
 
