@@ -9,11 +9,20 @@
 #include "math.h"
 
 #define LCD_CS    8 //chip selection CSX
-#define LCD_WR     9 //write
-#define LCR_RST  10 //reset
-#define LCD_RS     11 //command 0 data 1 selection D/CX
-#define LCD_RD   12 //read
-   
+#define LCD_WR    9 //write
+#define LCR_RST   10 //reset
+#define LCD_RS    11 //command 0 data 1 selection D/CX
+#define LCD_RD    12 //read
+
+//Touch
+
+#define TP_IRQ    13  
+#define TP_CS     14  
+#define TP_CLK    15  
+#define TP_MISO    17  
+#define TP_MOSI    16  
+
+
 void Lcd_Writ_Bus(uint command)
 {
     gpio_put(LCD_WR,1);
@@ -181,7 +190,6 @@ void Lcd_Init(void)
     Lcd_Write_Com(0X29); //Display ON
 }
 
-
 void H_LineFast(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int c)                   
 {
   unsigned int i,j;
@@ -221,9 +229,6 @@ void V_line(unsigned int x0, unsigned int y0, unsigned int lenght, unsigned int 
   V_LineFast(x0,y0,lenght,c);
   Lcd_EndWrite();  
 }
-
-
-
 
 #define SWAP(T, a, b) do { T tmp = a; a = b; b = tmp; } while (0)
 
@@ -387,6 +392,245 @@ void LCD_Clear(unsigned int j)
       return r << 11 | g << 5 | b;
   }
 
+
+
+void TCLK_HIGH(){
+   gpio_put(TP_CLK, 1);
+}
+void TCLK_LOW(){
+   gpio_put(TP_CLK, 0);
+}
+
+void TCS_HIGH(){
+   gpio_put(TP_CS, 1);
+}
+void TCS_LOW(){
+   gpio_put(TP_CS, 0);
+}
+
+void TDIN_HIGH(){
+   gpio_put(TP_MISO, 1);
+}
+void TDIN_LOW(){
+   gpio_put(TP_MISO, 0);
+}
+
+void TDOUT_HIGH(){
+   gpio_put(TP_MOSI, 1);
+}
+void TDOUT_LOW(){
+   gpio_put(TP_MOSI, 0);
+}
+
+void TP_Write_Byte(uint8_t data)
+{
+	uint8_t val = 0x80;
+	while(val)
+	{
+		if(data&val)
+		{
+			TDIN_HIGH(); 
+		}
+		else
+		{
+			TDIN_LOW();
+		}
+		TCLK_LOW();
+		TCLK_HIGH();
+		val >>= 1;
+	}
+}
+
+uint16_t TP_Read_ADC(uint8_t cmd)
+{
+	uint16_t num=0; 
+	uint8_t count=0; 
+	TCS_LOW(); 
+	TCLK_LOW();           
+	TDIN_LOW();
+	TP_Write_Byte(cmd);
+	//delay_us(6);              
+	TCLK_LOW(); 
+	//delay_us(1); 
+  sleep_ms(1);
+	TCLK_HIGH();
+	TCLK_LOW();
+	for(count=0;count<16;count++)  
+	{   
+	    num<<=1;          
+	    TCLK_LOW();                         
+	    TCLK_HIGH();
+	    if(gpio_get(TP_MOSI))
+	    {
+	         num += 1;                  
+	    } 
+		else
+		{
+			num += 0; 
+		}
+	}
+	num>>=4;   // the high 12 bits is valid
+    TCS_HIGH();   
+   	return num; 
+}
+
+
+#define READ_TIMES 3 //the times for read
+#define LOST_VAL 1          //
+#define CMD_RDX 0XD0
+#define CMD_RDY 0X90
+
+uint16_t TP_Read_XY(uint8_t xy)
+{
+ 	uint16_t i, j;
+ 	uint16_t buf[READ_TIMES];
+ 	uint16_t sum=0;
+ 	uint16_t temp;    
+ 	for(i=0;i<READ_TIMES;i++)
+ 	{                                 
+  		buf[i]=TP_Read_ADC(xy);            
+    }                                    
+	for(i=0;i<READ_TIMES-1; i++)//Sort in ascending order
+ 	{
+  		for(j=i+1;j<READ_TIMES;j++)
+       	{
+        	if(buf[i]>buf[j])
+            {
+             	temp=buf[i];
+             	buf[i]=buf[j];
+             	buf[j]=temp;
+          	}
+      	}
+  	}          
+	for(i=LOST_VAL;i<READ_TIMES-LOST_VAL;i++) //Remove maximum and minimum values
+	{
+		sum+=buf[i];
+	}
+	temp=sum/(READ_TIMES-2*LOST_VAL);
+	return temp;   
+} 
+
+uint8_t TP_Read_Coordinate(uint16_t *x,uint16_t *y)
+{
+        uint16_t xtemp,ytemp;                                                    
+        xtemp=TP_Read_XY(CMD_RDX);
+        ytemp=TP_Read_XY(CMD_RDY);
+        if(xtemp<100||ytemp<100)return 0;//Reading failed
+        *x=xtemp;
+        *y=ytemp;
+        return 1;//Reading success
+}
+#define ERR_RANGE 50 //error range
+
+uint8_t TP_Read_Coordinate2(uint16_t *x,uint16_t *y) 
+{
+  	uint16_t x1,y1;
+  	uint16_t x2,y2;
+  	uint8_t flag;    
+    flag=TP_Read_Coordinate(&x1,&y1);  
+    if(flag==0)
+    {
+		  return 0;
+    }
+
+	  flag=TP_Read_Coordinate(&x2,&y2);
+    if(flag==0)
+    {
+		return 0;   
+    }
+	  
+    if(((x2<=x1&&x1<x2+ERR_RANGE)||(x1<=x2&&x2<x1+ERR_RANGE))//Before and after the two samples are within +- ERR_RANGE.
+      &&((y2<=y1&&y1<y2+ERR_RANGE)||(y1<=y2&&y2<y1+ERR_RANGE)))
+    {
+        *x=(x1+x2)/2;
+        *y=(y1+y2)/2;
+        return 1;
+    }
+	  else
+	  {
+      	return 0;          
+  	}        
+} 
+
+uint16_t x,y;
+long myX,myY;
+double factX=0;
+double factY=0;
+
+//for resolution 320x480,the calibration parameter is 852,-14,1284,-30
+#define XFAC      3785// 852 //663 
+#define XOFFSET   (-258)//(-14) //(-13) 
+#define YFAC      3819// 1284 //894 
+#define YOFFSET   (-352)//(-30) 
+
+uint16_t calUpperX=0;
+uint16_t calBottomX=0;
+uint16_t calUpperY=0;
+uint16_t calBottomY=0;
+
+void ReadTouch()
+{
+  x=0;
+  y=0;
+  if(!gpio_get(TP_IRQ)){
+    
+    TP_Read_Coordinate2(&x,&y);
+    
+    printf("X,Y: %d , %d \n",x , y);
+    factX =(double)(XFAC +XOFFSET ) / (double)x;
+    factY =(double)(YFAC +YOFFSET ) / (double)y;
+    
+    printf("myX,myY: %d , %d \n",myX , myY);
+    myX = (320 - (double)320/factX) + 40;
+    myY = (480 - (double)480/factY) /*+ 35*/;
+    
+    
+    if(myX>=0 && myY>=0 && myX<=320 && myY<=480)
+    {
+      //Lcd_StartWrite();
+      //Write_Pixel(myX,myY, 0x1F);
+      //Lcd_EndWrite();
+
+      Rectf(myX, myY, 3, 3, 0x1F);
+    }    
+
+    //printf("myX,myY: %d , %d \n",myX , myY);
+
+  }else{
+    //LCD_Clear(0x0);
+  }
+  
+}
+
+#define SPI_PORT spi0
+void touch_Init()
+{ 
+    gpio_init(TP_CS);
+    gpio_set_dir(TP_CS, GPIO_OUT);
+    
+    gpio_init(TP_CLK);
+    gpio_set_dir(TP_CLK, GPIO_OUT);
+    
+    gpio_init(TP_MISO);
+    gpio_set_dir(TP_MISO, GPIO_OUT);
+
+    gpio_init(TP_MOSI);
+    gpio_set_dir(TP_MOSI, GPIO_IN);
+
+    gpio_init(TP_IRQ);
+    gpio_set_dir(TP_IRQ,  GPIO_OUT);
+
+    TDIN_HIGH();
+	  TCLK_HIGH(); 
+	  TCS_HIGH();
+     
+    while(1)
+    {
+      ReadTouch();  
+    }
+
+}
+
 int main() {
 
     stdio_init_all();
@@ -445,9 +689,34 @@ int main() {
     gpio_put(LCR_RST,1); 
     gpio_put(LCD_RD,1); 
 
+
+    //Touch
+    /*
+    gpio_init(TP_CS);
+    gpio_set_dir(TP_CS, GPIO_OUT);
+
+    gpio_init(TP_CLK);
+    gpio_set_dir(TP_CLK, GPIO_OUT);
+
+    gpio_init(TP_MISO);
+    gpio_set_dir(TP_MISO, GPIO_OUT);
+
+    gpio_init(TP_IRQ);
+    gpio_set_dir(TP_IRQ, GPIO_OUT);
+
+    gpio_init(TP_MOSI);
+    gpio_set_dir(TP_MOSI, GPIO_IN);
+    */
+
     printf("init...\n");
     Lcd_Init();
     printf("OK\n");
+
+
+  LCD_Clear(0xFFFF);
+
+  touch_Init();
+ 
 
   while(1){      
       

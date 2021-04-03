@@ -8,26 +8,24 @@
 #include "hardware/pio.h"
 #include "time.h"
 #include "../ST7796Library/PicoST7796.h"
-#include "image.h"
+#include "image1.h"
+#include "image2.h"
 
 PicoST7796 picoST7796;
  
-int main() {
-
-    stdio_init_all();      
-    
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-    gpio_put(PICO_DEFAULT_LED_PIN, 1);
+void Button1Clicked(){
+    picoST7796.Draw_Bitmap(0,0,myImage1,320,480);
     sleep_ms(5000);
-    gpio_put(PICO_DEFAULT_LED_PIN, 0);
-    sleep_ms(1000); 
+}
 
-    picoST7796.Lcd_Init();
+void Button2Clicked(){
+    picoST7796.Draw_Bitmap(0,0,myImage2,320,480);
+    sleep_ms(5000);
+}
 
-    while(1){      
-      
-        //red
+void Button3Clicked(){
+    uint color=picoST7796.RGB(0xFF,0,0);
+    //red
         picoST7796.LCD_Clear(0xF800);
         sleep_ms(1000);
             
@@ -48,11 +46,6 @@ int main() {
         picoST7796.LCD_Clear(picoST7796.RGB(0,0,0));
         sleep_ms(1000);
 
-        uint color=picoST7796.RGB(0xFF,0,0);
-
-        picoST7796.Draw_Bitmap(0,0,myImage,320,480);
-        
-        sleep_ms(5000);
         //Vertical lines
         for (int i=1; i<320; i++)
         {
@@ -246,11 +239,36 @@ int main() {
         sleep_ms(2000);
         picoST7796.LCD_Clear(picoST7796.RGB(0,0,0));
         sleep_ms(500);
+}
 
-        printf("OK\n");
-        sleep_ms(2000);
+int main() {
 
-        printf("END\n"); 
-      
+    stdio_init_all();      
+    
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+    gpio_put(PICO_DEFAULT_LED_PIN, 1);
+    sleep_ms(5000);
+    gpio_put(PICO_DEFAULT_LED_PIN, 0);
+    sleep_ms(1000); 
+
+    picoST7796.Lcd_Init();
+    
+    
+    picoST7796.LCD_TP_Init();
+    
+    picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0xFF,0xFF));
+
+    picoST7796.LCD_AddButton(200,100,100,70,"Image1", *Button1Clicked); 
+    picoST7796.LCD_AddButton(200,200,100,70,"Image2", *Button2Clicked);
+    picoST7796.LCD_AddButton(100,300,200,70,"Start test", *Button3Clicked);
+
+ while(1){
+    
+    picoST7796.WaitForClick();   
+    picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0xFF,0xFF));
+    picoST7796.RedrawButtons();
+    
+          
   }
 }

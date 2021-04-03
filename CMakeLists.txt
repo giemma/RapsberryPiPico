@@ -20,3 +20,4 @@ add_subdirectory(simpleST7796)
 
 add_subdirectory(ST7796Library)
 add_subdirectory(ST7796LibraryExample)
+
