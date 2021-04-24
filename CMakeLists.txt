@@ -14,6 +14,11 @@ pico_sdk_init()
 
 include(example_auto_set_url.cmake)
 
+add_subdirectory(template)
+
+add_subdirectory(ov7670)
+
+add_subdirectory(pio/blinkPio)
 
 add_subdirectory(multiblink)
 add_subdirectory(simpleST7796)
@@ -21,3 +26,5 @@ add_subdirectory(simpleST7796)
 add_subdirectory(ST7796Library)
 add_subdirectory(ST7796LibraryExample)
 
+add_subdirectory(StepperLibrary)
+add_subdirectory(StepperLibraryExample)

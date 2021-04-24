@@ -8,10 +8,10 @@
 #include "pico/binary_info.h"
 #include "math.h"
 
-#define LCD_CS    8 //chip selection CSX
-#define LCD_WR    9 //write
-#define LCR_RST   10 //reset
-#define LCD_RS    11 //command 0 data 1 selection D/CX
+#define LCD_CS    10 //chip selection CSX
+#define LCD_WR    8 //write
+#define LCR_RST   11 //reset
+#define LCD_RS    9 //command 0 data 1 selection D/CX
 #define LCD_RD    12 //read
 
 //Touch

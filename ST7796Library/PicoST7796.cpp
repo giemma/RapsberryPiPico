@@ -41,10 +41,10 @@ const uint LED_6 = 6;
 const uint LED_7 = 7;
 
 
-#define LCD_CS    8 //command 0 data 1 selection D/CX
-#define LCD_WR     9 //write
+#define LCD_CS    11 //command 0 data 1 selection D/CX
+#define LCD_WR     8 //write
 #define LCR_RST  10 //reset
-#define LCD_RS    11 //chip selection CSX
+#define LCD_RS    9 //chip selection CSX
 #define LCD_RD   12 //read
 
 //Touch

@@ -255,19 +255,19 @@ int main() {
     picoST7796.Lcd_Init();
     
     
-    picoST7796.LCD_TP_Init();
+    //picoST7796.LCD_TP_Init();
     
-    picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0xFF,0xFF));
+    picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0,0));
 
-    picoST7796.LCD_AddButton(200,100,100,70,"Image1", *Button1Clicked); 
-    picoST7796.LCD_AddButton(200,200,100,70,"Image2", *Button2Clicked);
-    picoST7796.LCD_AddButton(100,300,200,70,"Start test", *Button3Clicked);
+    //picoST7796.LCD_AddButton(200,100,100,70,"Image1", *Button1Clicked); 
+    //picoST7796.LCD_AddButton(200,200,100,70,"Image2", *Button2Clicked);
+    //picoST7796.LCD_AddButton(100,300,200,70,"Start test", *Button3Clicked);
 
  while(1){
     
-    picoST7796.WaitForClick();   
-    picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0xFF,0xFF));
-    picoST7796.RedrawButtons();
+   //picoST7796.WaitForClick();   
+    //picoST7796.LCD_Clear(picoST7796.RGB(0xFF,0xFF,0xFF));
+   // picoST7796.RedrawButtons();
     
           
   }
